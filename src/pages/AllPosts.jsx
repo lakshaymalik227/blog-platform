@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import appwriteService from "../appwrite/config";
 import { Container, PostCard } from '../components';
+import { Account } from 'appwrite';
+import conf from '../conf/conf.js';
 
 function AllPosts() {
   const [posts, setPosts] = useState([]);
@@ -9,7 +11,10 @@ function AllPosts() {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await appwriteService.getPosts();
+        const account = new Account(appwriteService.client);
+        const user = await account.get(); // Get logged-in user
+
+        const response = await appwriteService.getPosts(user.$id); // Filter by user ID
         if (response) {
           setPosts(response.documents);
         } else {

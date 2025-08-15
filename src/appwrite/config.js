@@ -131,12 +131,27 @@ export class Service{
         }
     }
 
-    getFilePreview(fileId){
-        return this.bucket.getFilePreview(
+    async getFilePreview(fileId) {
+    try {
+        // Use getFileView instead of getFilePreview to bypass transformation limits
+        const result = await this.bucket.getFileView(
             conf.appwriteBucketId,
             fileId
-        )
+        );
+
+        // This returns a URL object, so we convert it to a string for the <img src>
+        const fileURL = result?.href || result;
+
+        console.log("Appwrite file view URL:", fileURL);
+        return fileURL;
+    } catch (error) {
+        console.error("Appwrite service :: getFilePreview (view) :: error", error);
+        return null;
     }
+}
+
+
+
 }
 
 
